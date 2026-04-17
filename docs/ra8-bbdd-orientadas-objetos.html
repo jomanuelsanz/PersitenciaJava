@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RA8 – Bases de datos orientadas a objetos en Java</title>
+  <style>
+    :root {
+      --primary:   #1a5276;
+      --accent:    #2e86c1;
+      --light-bg:  #eaf4fc;
+      --code-bg:   #1e1e2e;
+      --code-fg:   #cdd6f4;
+      --exercise:  #fef9e7;
+      --exercise-border: #f0c040;
+      --note-bg:   #eafaf1;
+      --note-border: #27ae60;
+      --warn-bg:   #fdedec;
+      --warn-border: #e74c3c;
+      --font-main: 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      font-size: 16px;
+      line-height: 1.7;
+      color: #2c3e50;
+      background: #f8f9fa;
+    }
+
+    /* ── Layout ── */
+    .page-wrapper { display: flex; min-height: 100vh; }
+
+    nav#toc {
+      width: 270px;
+      min-width: 270px;
+      background: var(--primary);
+      color: #ecf0f1;
+      padding: 2rem 1.2rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    nav#toc h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #85c1e9;
+      margin-bottom: 1rem;
+    }
+
+    nav#toc ul { list-style: none; }
+    nav#toc ul li { margin-bottom: 0.25rem; }
+
+    nav#toc a {
+      color: #aed6f1;
+      text-decoration: none;
+      font-size: 0.88rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    nav#toc a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    nav#toc .toc-section { margin-top: 0.8rem; }
+    nav#toc .toc-section > a {
+      color: #d6eaf8;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    nav#toc .toc-sub { padding-left: 1rem; }
+
+    main {
+      flex: 1;
+      padding: 3rem 4rem;
+      max-width: 960px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      padding: 3rem 4rem 2.5rem;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      margin-bottom: 0.8rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    header p { font-size: 1.05rem; opacity: 0.9; max-width: 640px; }
+
+    .meta-bar {
+      background: var(--light-bg);
+      border-left: 4px solid var(--accent);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      gap: 2.5rem;
+      font-size: 0.9rem;
+      color: var(--primary);
+    }
+    .meta-bar strong { font-weight: 700; }
+
+    /* ── Sections ── */
+    section { margin-bottom: 3.5rem; }
+
+    h2 {
+      font-size: 1.6rem;
+      color: var(--primary);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      color: var(--accent);
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    h4 {
+      font-size: 1rem;
+      color: #555;
+      margin: 1.2rem 0 0.4rem;
+      font-weight: 600;
+    }
+
+    p { margin-bottom: 0.85rem; }
+    ul, ol { margin: 0.6rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+
+    /* ── Code ── */
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 1.2rem 1.4rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      margin: 1rem 0 1.4rem;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: #e8f4fd;
+      color: #1a5276;
+      padding: 0.1em 0.4em;
+      border-radius: 3px;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      font-size: 1em;
+    }
+
+    /* Syntax colors inside pre blocks */
+    .kw  { color: #89b4fa; }   /* keywords */
+    .typ { color: #a6e3a1; }   /* types / classes */
+    .str { color: #a6e3a1; }   /* strings */
+    .cm  { color: #6c7086; font-style: italic; } /* comments */
+    .ann { color: #fab387; }   /* annotations */
+    .num { color: #fab387; }   /* numbers */
+    .mth { color: #89dceb; }   /* methods */
+
+    /* ── Callouts ── */
+    .note, .exercise, .warning, .resources {
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin: 1.2rem 0;
+    }
+
+    .note {
+      background: var(--note-bg);
+      border-left: 4px solid var(--note-border);
+    }
+    .note::before { content: "ℹ️  Nota: "; font-weight: 700; color: #1e8449; }
+
+    .warning {
+      background: var(--warn-bg);
+      border-left: 4px solid var(--warn-border);
+    }
+    .warning::before { content: "⚠️  Atención: "; font-weight: 700; color: #c0392b; }
+
+    .exercise {
+      background: var(--exercise);
+      border-left: 4px solid var(--exercise-border);
+    }
+    .exercise-title {
+      font-weight: 700;
+      color: #7d6608;
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+    }
+    .exercise-title::before { content: "✏️  "; }
+
+    .resources {
+      background: #f4ecf7;
+      border-left: 4px solid #8e44ad;
+    }
+    .resources-title {
+      font-weight: 700;
+      color: #6c3483;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+    .resources-title::before { content: "🔗  "; }
+    .resources ul { margin-bottom: 0; }
+    .resources a { color: #7d3c98; }
+    .resources a:hover { color: #6c3483; text-decoration: underline; }
+
+    /* ── Comparison table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.92rem;
+    }
+    th {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.6rem 1rem;
+      text-align: left;
+    }
+    td { padding: 0.5rem 1rem; border-bottom: 1px solid #dce6f0; }
+    tr:nth-child(even) td { background: #f0f7fc; }
+
+    /* ── Session label ── */
+    .session-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--primary);
+      color: #aed6f1;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+      nav#toc { display: none; }
+      main { padding: 1.5rem; }
+      header { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">DAW · Programación · Java</div>
+  <h1>RA8 – Bases de datos orientadas a objetos en Java</h1>
+  <p>Unidad didáctica para la enseñanza de persistencia de objetos mediante Java Serialization y JPA con ObjectDB.</p>
+</header>
+
+<div class="meta-bar">
+  <span><strong>Duración estimada:</strong> 14–16 horas</span>
+  <span><strong>Java:</strong> 17+</span>
+  <span><strong>Herramienta principal:</strong> ObjectDB 2.x + JPA</span>
+  <span><strong>Prerrequisitos:</strong> POO en Java, Maven básico</span>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ──────────────── SIDEBAR TOC ──────────────── -->
+  <nav id="toc">
+    <h2>Contenidos</h2>
+    <ul>
+      <li class="toc-section"><a href="#intro">1. Introducción</a>
+        <ul class="toc-sub">
+          <li><a href="#que-son">¿Qué son las BBDD OO?</a></li>
+          <li><a href="#comparativa">Comparativa con BBDD relacionales</a></li>
+        </ul>
+      </li>
+      <li class="toc-section"><a href="#serializacion">2. Serialización en Java</a>
+        <ul class="toc-sub">
+          <li><a href="#serializable">Interfaz Serializable</a></li>
+          <li><a href="#streams">ObjectOutputStream / InputStream</a></li>
+          <li><a href="#transient">transient y serialVersionUID</a></li>
+        </ul>
+      </li>
+      <li class="toc-section"><a href="#objectdb">3. ObjectDB y JPA</a>
+        <ul class="toc-sub">
+          <li><a href="#configuracion">Configuración Maven</a></li>
+          <li><a href="#entidades">Entidades JPA</a></li>
+          <li><a href="#entitymanager">EntityManager y CRUD</a></li>
+        </ul>
+      </li>
+      <li class="toc-section"><a href="#consultas">4. Consultas JPQL</a>
+        <ul class="toc-sub">
+          <li><a href="#jpql-basico">SELECT básico</a></li>
+          <li><a href="#jpql-filtros">Filtros y parámetros</a></li>
+        </ul>
+      </li>
+      <li class="toc-section"><a href="#relaciones">5. Tipos complejos</a>
+        <ul class="toc-sub">
+          <li><a href="#herencia">Herencia</a></li>
+          <li><a href="#colecciones">Relaciones y colecciones</a></li>
+        </ul>
+      </li>
+      <li class="toc-section"><a href="#transacciones">6. Transacciones</a></li>
+      <li class="toc-section"><a href="#recursos">Recursos oficiales</a></li>
+    </ul>
+  </nav>
+
+  <!-- ──────────────── MAIN CONTENT ──────────────── -->
+  <main>
+
+    <!-- ════════════════════════════════════════════
+         SECCIÓN 1 – INTRODUCCIÓN
+    ═════════════════════════════════════════════ -->
+    <section id="intro">
+      <div class="session-tag">Sesiones 1–2 · ~2 h</div>
+      <h2>1. Introducción a las bases de datos orientadas a objetos</h2>
+
+      <h3 id="que-son">¿Qué son las BBDD orientadas a objetos?</h3>
+      <p>
+        Una <strong>base de datos orientada a objetos (OODB)</strong> almacena información directamente como
+        objetos, del mismo modo en que los lenguajes de programación orientados a objetos (como Java)
+        los representan en memoria. No es necesario transformar los objetos a tablas ni filas:
+        el propio objeto —con sus atributos y relaciones— es la unidad de persistencia.
+      </p>
+      <p>Los principales conceptos que introduce una OODB son:</p>
+      <ul>
+        <li><strong>OID (Object Identifier):</strong> cada objeto persistente recibe un identificador único e inmutable generado por la propia base de datos.</li>
+        <li><strong>Persistencia por alcance (<em>persistence by reachability</em>):</strong> al guardar un objeto, todos los objetos a los que referencia también se persisten en cascada.</li>
+        <li><strong>Identidad vs. igualdad:</strong> dos objetos pueden tener los mismos valores pero ser objetos distintos en la base de datos.</li>
+        <li><strong>Ciclo de vida:</strong> un objeto puede estar en estado <em>transitorio</em> (solo en memoria), <em>persistente</em> (guardado en la BBDD) o <em>eliminado</em>.</li>
+      </ul>
+
+      <h3 id="comparativa">Comparativa: BBDD relacionales vs. orientadas a objetos</h3>
+      <table>
+        <thead>
+          <tr><th>Aspecto</th><th>BBDD Relacional (SQL)</th><th>BBDD Orientada a Objetos</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Unidad de datos</td><td>Fila en una tabla</td><td>Objeto Java</td></tr>
+          <tr><td>Estructura</td><td>Tablas con columnas fijas</td><td>Clases con atributos y métodos</td></tr>
+          <tr><td>Relaciones</td><td>Claves foráneas (FK)</td><td>Referencias directas entre objetos</td></tr>
+          <tr><td>Consultas</td><td>SQL</td><td>JPQL / JDOQL / consultas nativas</td></tr>
+          <tr><td>Herencia</td><td>Estrategias de mapeo complejas</td><td>Natural (como en Java)</td></tr>
+          <tr><td>Impedance mismatch</td><td>Sí (ORM necesario)</td><td>No (objetos directos)</td></tr>
+          <tr><td>Uso principal</td><td>Datos tabulares, informes</td><td>Gráficos de objetos complejos</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        El problema del <em>impedance mismatch</em> es la diferencia conceptual entre el modelo de objetos
+        de Java y el modelo relacional de SQL. Las BBDD OO lo eliminan, pero las BBDD relacionales siguen
+        siendo más comunes en producción.
+      </div>
+
+      <p><strong>Sistemas gestores OODB más conocidos:</strong></p>
+      <ul>
+        <li><strong>ObjectDB</strong> — Java puro, soporta JPA y JDO, activamente mantenido. <em>El que usaremos.</em></li>
+        <li><strong>db4o</strong> — Clásico en entornos educativos; actualmente sin mantenimiento activo.</li>
+        <li><strong>Versant / Objectivity</strong> — Entornos empresariales.</li>
+      </ul>
+
+      <div class="exercise">
+        <div class="exercise-title">Ejercicio 1.1 – Debate en clase</div>
+        <p>
+          Dado el siguiente enunciado: <em>"Una red social almacena perfiles de usuarios, publicaciones, comentarios anidados
+          y relaciones de amistad"</em>. Razona en grupo si sería más adecuado usar una BBDD relacional o una
+          BBDD orientada a objetos y justifica la decisión.
+        </p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════
+         SECCIÓN 2 – SERIALIZACIÓN
+    ═════════════════════════════════════════════ -->
+    <section id="serializacion">
+      <div class="session-tag">Sesiones 3–5 · ~4 h</div>
+      <h2>2. Persistencia básica: Serialización de objetos en Java</h2>
+      <p>
+        Antes de usar un OODB completo, Java ofrece un mecanismo nativo de persistencia:
+        la <strong>serialización</strong>. Convierte un objeto Java en una secuencia de bytes que puede
+        guardarse en un fichero o transmitirse por red, y luego reconstruirse exactamente igual.
+      </p>
+      <p>Es un buen punto de partida conceptual, pero <em>no es una base de datos real</em>:
+        no ofrece índices, no permite consultas, y escala mal con muchos objetos.</p>
+
+      <h3 id="serializable">2.1 La interfaz <code>Serializable</code></h3>
+      <p>
+        Para que un objeto pueda serializarse, su clase debe implementar
+        <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html"
+           target="_blank"><code>java.io.Serializable</code></a>.
+        Es una <strong>interfaz marcador</strong>: no define ningún método, solo indica que la clase permite
+        la serialización.
+      </p>
+
+<pre><code><span class="kw">import</span> java.io.Serializable;
+
+<span class="kw">public class</span> <span class="typ">Producto</span> <span class="kw">implements</span> <span class="typ">Serializable</span> {
+
+    <span class="kw">private static final long</span> serialVersionUID = <span class="num">1L</span>;
+
+    <span class="kw">private</span> <span class="typ">String</span> nombre;
+    <span class="kw">private double</span> precio;
+    <span class="kw">private int</span>    stock;
+
+    <span class="kw">public</span> <span class="mth">Producto</span>(<span class="typ">String</span> nombre, <span class="kw">double</span> precio, <span class="kw">int</span> stock) {
+        <span class="kw">this</span>.nombre = nombre;
+        <span class="kw">this</span>.precio = precio;
+        <span class="kw">this</span>.stock  = stock;
+    }
+
+    <span class="cm">// getters y setters ...</span>
+}</code></pre>
+
+      <h3 id="streams">2.2 <code>ObjectOutputStream</code> y <code>ObjectInputStream</code></h3>
+      <p>
+        La escritura se realiza con
+        <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html"
+           target="_blank"><code>ObjectOutputStream</code></a>
+        y la lectura con
+        <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html"
+           target="_blank"><code>ObjectInputStream</code></a>.
+      </p>
+
+      <h4>Guardar un objeto en disco</h4>
+<pre><code><span class="kw">import</span> java.io.*;
+
+<span class="kw">public class</span> <span class="typ">GuardarProducto</span> {
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="typ">String</span>[] args) {
+
+        <span class="typ">Producto</span> p = <span class="kw">new</span> <span class="typ">Producto</span>(<span class="str">"Teclado"</span>, <span class="num">49.99</span>, <span class="num">10</span>);
+
+        <span class="kw">try</span> (<span class="typ">ObjectOutputStream</span> oos = <span class="kw">new</span> <span class="typ">ObjectOutputStream</span>(
+                <span class="kw">new</span> <span class="typ">FileOutputStream</span>(<span class="str">"producto.dat"</span>))) {
+
+            oos.<span class="mth">writeObject</span>(p);
+            <span class="typ">System</span>.out.<span class="mth">println</span>(<span class="str">"Objeto guardado correctamente."</span>);
+
+        } <span class="kw">catch</span> (<span class="typ">IOException</span> e) {
+            e.<span class="mth">printStackTrace</span>();
+        }
+    }
+}</code></pre>
+
+      <h4>Recuperar el objeto del disco</h4>
+<pre><code><span class="kw">import</span> java.io.*;
+
+<span class="kw">public class</span> <span class="typ">RecuperarProducto</span> {
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="typ">String</span>[] args) {
+
+        <span class="kw">try</span> (<span class="typ">ObjectInputStream</span> ois = <span class="kw">new</span> <span class="typ">ObjectInputStream</span>(
+                <span class="kw">new</span> <span class="typ">FileInputStream</span>(<span class="str">"producto.dat"</span>))) {
+
+            <span class="typ">Producto</span> p = (<span class="typ">Producto</span>) ois.<span class="mth">readObject</span>();
+            <span class="typ">System</span>.out.<span class="mth">println</span>(<span class="str">"Nombre: "</span> + p.<span class="mth">getNombre</span>());
+            <span class="typ">System</span>.out.<span class="mth">println</span>(<span class="str">"Precio: "</span> + p.<span class="mth">getPrecio</span>());
+
+        } <span class="kw">catch</span> (<span class="typ">IOException</span> | <span class="typ">ClassNotFoundException</span> e) {
+            e.<span class="mth">printStackTrace</span>();
+        }
+    }
+}</code></pre>
+
+      <h3 id="transient">2.3 <code>transient</code> y <code>serialVersionUID</code></h3>
+      <ul>
+        <li>
+          <code>transient</code>: marca un campo para que <strong>no se serialice</strong>
+          (contraseñas, conexiones, caché calculada).
+        </li>
+        <li>
+          <code>serialVersionUID</code>: número de versión de la clase. Si la clase cambia sin
+          actualizarlo, la deserialización puede fallar con <code>InvalidClassException</code>.
+          Siempre declararlo explícitamente.
+        </li>
+      </ul>
+
+<pre><code><span class="kw">public class</span> <span class="typ">Usuario</span> <span class="kw">implements</span> <span class="typ">Serializable</span> {
+
+    <span class="kw">private static final long</span> serialVersionUID = <span class="num">2L</span>;
+
+    <span class="kw">private</span> <span class="typ">String</span> nombre;
+    <span class="kw">private transient</span> <span class="typ">String</span> password;  <span class="cm">// NO se guarda</span>
+    <span class="kw">private transient</span> <span class="typ">Connection</span> conn;   <span class="cm">// NO se guarda</span>
+}</code></pre>
+
+      <div class="warning">
+        La serialización nativa <strong>no es segura</strong> para datos no confiables.
+        Oracle recomienda evitar deserializar datos de fuentes externas desconocidas.
+        Ver:
+        <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/serialization/index.html"
+           target="_blank">Java Object Serialization Specification (Java 17)</a>.
+      </div>
+
+      <div class="exercise">
+        <div class="exercise-title">Ejercicio 2.1 – Serializar una lista de objetos</div>
+        <p>
+          Crea la clase <code>Alumno</code> (nombre, nota, curso) que implemente <code>Serializable</code>.
+          Escribe un programa que guarde una <code>List&lt;Alumno&gt;</code> en un fichero
+          <code>alumnos.dat</code> y otro programa que la recupere e imprima por pantalla.
+          Comprueba que si añades un campo nuevo a la clase sin cambiar el <code>serialVersionUID</code>,
+          falla la lectura.
+        </p>
+      </div>
+
+      <div class="resources">
+        <div class="resources-title">Recursos oficiales – Serialización</div>
+        <ul>
+          <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html" target="_blank">API: java.io.Serializable (Java 17)</a></li>
+          <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html" target="_blank">API: ObjectOutputStream (Java 17)</a></li>
+          <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html" target="_blank">API: ObjectInputStream (Java 17)</a></li>
+          <li><a href="https://docs.oracle.com/en/java/javase/17/docs/specs/serialization/index.html" target="_blank">Java Object Serialization Specification (Java 17)</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════
+         SECCIÓN 3 – OBJECTDB + JPA
+    ═════════════════════════════════════════════ -->
+    <section id="objectdb">
+      <div class="session-tag">Sesiones 6–9 · ~5 h</div>
+      <h2>3. ObjectDB y JPA: base de datos orientada a objetos real</h2>
+      <p>
+        <a href="https://www.objectdb.com/" target="_blank"><strong>ObjectDB</strong></a> es una base de datos
+        orientada a objetos pura en Java que implementa el estándar
+        <strong>JPA (Jakarta Persistence API)</strong>. Esto nos permite aprender JPA —que también se usa
+        con BBDD relacionales— trabajando directamente con objetos sin ningún mapeo a tablas.
+      </p>
+
+      <h3 id="configuracion">3.1 Configuración del proyecto Maven</h3>
+      <p>Añade el repositorio y la dependencia de ObjectDB a tu <code>pom.xml</code>:</p>
+
+<pre><code><span class="cm">&lt;!-- pom.xml --&gt;</span>
+&lt;repositories&gt;
+  &lt;repository&gt;
+    &lt;id&gt;objectdb&lt;/id&gt;
+    &lt;url&gt;https://m2.objectdb.com&lt;/url&gt;
+  &lt;/repository&gt;
+&lt;/repositories&gt;
+
+&lt;dependencies&gt;
+  <span class="cm">&lt;!-- ObjectDB (jakarta variant, requiere Java 17+) --&gt;</span>
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.objectdb&lt;/groupId&gt;
+    &lt;artifactId&gt;objectdb-jk&lt;/artifactId&gt;
+    &lt;version&gt;2.9.5&lt;/version&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+
+      <p>
+        Crea también el fichero de configuración de persistencia en
+        <code>src/main/resources/META-INF/persistence.xml</code>:
+      </p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;persistence version="3.0"
+    xmlns="https://jakarta.ee/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+        https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"&gt;
+
+  &lt;persistence-unit name="tiendaDB"&gt;
+    &lt;provider&gt;com.objectdb.jpa.Provider&lt;/provider&gt;
+    &lt;properties&gt;
+      <span class="cm">&lt;!-- Fichero de base de datos (se crea automáticamente) --&gt;</span>
+      &lt;property name="javax.persistence.jdbc.url"
+                value="tienda.odb" /&gt;
+    &lt;/properties&gt;
+  &lt;/persistence-unit&gt;
+
+&lt;/persistence&gt;</code></pre>
+
+      <h3 id="entidades">3.2 Entidades JPA</h3>
+      <p>
+        Una <strong>entidad</strong> es una clase Java anotada con
+        <a href="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entity"
+           target="_blank"><code>@Entity</code></a>
+        que JPA mapeará como un tipo persistente. Requiere un campo marcado con <code>@Id</code>
+        como identificador único.
+      </p>
+
+<pre><code><span class="kw">import</span> jakarta.persistence.*;
+
+<span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="typ">Producto</span> {
+
+    <span class="ann">@Id</span>
+    <span class="ann">@GeneratedValue</span>  <span class="cm">// ObjectDB genera el ID automáticamente</span>
+    <span class="kw">private long</span> id;
+
+    <span class="kw">private</span> <span class="typ">String</span> nombre;
+    <span class="kw">private double</span> precio;
+    <span class="kw">private int</span>    stock;
+
+    <span class="cm">// Constructor vacío obligatorio para JPA</span>
+    <span class="kw">public</span> <span class="mth">Producto</span>() {}
+
+    <span class="kw">public</span> <span class="mth">Producto</span>(<span class="typ">String</span> nombre, <span class="kw">double</span> precio, <span class="kw">int</span> stock) {
+        <span class="kw">this</span>.nombre = nombre;
+        <span class="kw">this</span>.precio = precio;
+        <span class="kw">this</span>.stock  = stock;
+    }
+
+    <span class="cm">// Getters y setters ...</span>
+
+    <span class="kw">public long</span>   <span class="mth">getId</span>()     { <span class="kw">return</span> id; }
+    <span class="kw">public</span> <span class="typ">String</span> <span class="mth">getNombre</span>() { <span class="kw">return</span> nombre; }
+    <span class="kw">public void</span>   <span class="mth">setNombre</span>(<span class="typ">String</span> n) { nombre = n; }
+    <span class="kw">public double</span> <span class="mth">getPrecio</span>() { <span class="kw">return</span> precio; }
+    <span class="kw">public void</span>   <span class="mth">setPrecio</span>(<span class="kw">double</span> p) { precio = p; }
+    <span class="kw">public int</span>    <span class="mth">getStock</span>()  { <span class="kw">return</span> stock; }
+    <span class="kw">public void</span>   <span class="mth">setStock</span>(<span class="kw">int</span> s) { stock = s; }
+}</code></pre>
+
+      <div class="note">
+        JPA exige un <strong>constructor vacío</strong> (público o protegido) para poder reconstruir
+        los objetos al leerlos de la base de datos.
+      </div>
+
+      <h3 id="entitymanager">3.3 <code>EntityManager</code>: operaciones CRUD</h3>
+      <p>
+        El
+        <a href="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager"
+           target="_blank"><code>EntityManager</code></a>
+        es la interfaz principal de JPA. Se obtiene a través de un
+        <code>EntityManagerFactory</code> y gestiona el ciclo de vida de los objetos persistentes.
+      </p>
+
+      <h4>Patrón de uso estándar</h4>
+<pre><code><span class="kw">import</span> jakarta.persistence.*;
+
+<span class="kw">public class</span> <span class="typ">Main</span> {
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="typ">String</span>[] args) {
+
+        <span class="typ">EntityManagerFactory</span> emf =
+            <span class="typ">Persistence</span>.<span class="mth">createEntityManagerFactory</span>(<span class="str">"tiendaDB"</span>);
+        <span class="typ">EntityManager</span> em = emf.<span class="mth">createEntityManager</span>();
+
+        <span class="kw">try</span> {
+            <span class="cm">// ─── CREATE ──────────────────────────────</span>
+            em.<span class="mth">getTransaction</span>().<span class="mth">begin</span>();
+            <span class="typ">Producto</span> teclado = <span class="kw">new</span> <span class="typ">Producto</span>(<span class="str">"Teclado"</span>, <span class="num">49.99</span>, <span class="num">10</span>);
+            em.<span class="mth">persist</span>(teclado);          <span class="cm">// guarda el objeto</span>
+            em.<span class="mth">getTransaction</span>().<span class="mth">commit</span>();
+            <span class="typ">System</span>.out.<span class="mth">println</span>(<span class="str">"ID asignado: "</span> + teclado.<span class="mth">getId</span>());
+
+            <span class="cm">// ─── READ ─────────────────────────────────</span>
+            <span class="typ">Producto</span> encontrado = em.<span class="mth">find</span>(<span class="typ">Producto</span>.<span class="kw">class</span>, teclado.<span class="mth">getId</span>());
+            <span class="typ">System</span>.out.<span class="mth">println</span>(<span class="str">"Encontrado: "</span> + encontrado.<span class="mth">getNombre</span>());
+
+            <span class="cm">// ─── UPDATE ───────────────────────────────</span>
+            em.<span class="mth">getTransaction</span>().<span class="mth">begin</span>();
+            encontrado.<span class="mth">setPrecio</span>(<span class="num">44.99</span>);  <span class="cm">// JPA detecta el cambio</span>
+            em.<span class="mth">getTransaction</span>().<span class="mth">commit</span>();
+
+            <span class="cm">// ─── DELETE ───────────────────────────────</span>
+            em.<span class="mth">getTransaction</span>().<span class="mth">begin</span>();
+            em.<span class="mth">remove</span>(encontrado);
+            em.<span class="mth">getTransaction</span>().<span class="mth">commit</span>();
+
+        } <span class="kw">finally</span> {
+            em.<span class="mth">close</span>();
+            emf.<span class="mth">close</span>();
+        }
+    }
+}</code></pre>
+
+      <table>
+        <thead>
+          <tr><th>Operación</th><th>Método JPA</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Crear</td><td><code>em.persist(obj)</code></td><td>Inserta el objeto en la BBDD</td></tr>
+          <tr><td>Leer por ID</td><td><code>em.find(Clase.class, id)</code></td><td>Devuelve el objeto o <code>null</code></td></tr>
+          <tr><td>Actualizar</td><td>Modificar campo + <code>commit()</code></td><td>JPA detecta cambios automáticamente</td></tr>
+          <tr><td>Eliminar</td><td><code>em.remove(obj)</code></td><td>Elimina el objeto de la BBDD</td></tr>
+          <tr><td>Adjuntar</td><td><code>em.merge(obj)</code></td><td>Sincroniza un objeto detached</td></tr>
+        </tbody>
+      </table>
+
+      <div class="exercise">
+        <div class="exercise-title">Ejercicio 3.1 – CRUD completo</div>
+        <p>
+          Crea la entidad <code>Libro</code> (título, autor, ISBN, precio).
+          Implementa un menú de consola con opciones para: añadir libro, buscar por ID,
+          actualizar precio y eliminar libro. Usa ObjectDB como base de datos.
+        </p>
+      </div>
+
+      <div class="resources">
+        <div class="resources-title">Recursos oficiales – JPA y ObjectDB</div>
+        <ul>
+          <li><a href="https://www.objectdb.com/java/jpa" target="_blank">ObjectDB: Manual completo de JPA</a></li>
+          <li><a href="https://www.objectdb.com/tutorial/jpa/start/maven" target="_blank">ObjectDB: Tutorial Getting Started con Maven</a></li>
+          <li><a href="https://jakarta.ee/learn/docs/jakartaee-tutorial/current/persist/persistence-intro/persistence-intro.html" target="_blank">Jakarta EE Tutorial: Introducción a Jakarta Persistence</a></li>
+          <li><a href="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager" target="_blank">API: EntityManager (Jakarta Persistence 3.2)</a></li>
+          <li><a href="https://jakarta.ee/learn/specification-guides/persistence-explained/" target="_blank">Jakarta Persistence Explained</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════
+         SECCIÓN 4 – CONSULTAS JPQL
+    ═════════════════════════════════════════════ -->
+    <section id="consultas">
+      <div class="session-tag">Sesiones 10–11 · ~2 h</div>
+      <h2>4. Consultas con JPQL</h2>
+      <p>
+        <strong>JPQL (Jakarta Persistence Query Language)</strong> es el lenguaje de consulta estándar de JPA.
+        Es similar a SQL pero opera sobre <strong>clases y atributos Java</strong>, no sobre tablas y columnas.
+      </p>
+
+      <h3 id="jpql-basico">4.1 SELECT básico</h3>
+<pre><code><span class="cm">// Recuperar todos los productos</span>
+<span class="typ">TypedQuery</span>&lt;<span class="typ">Producto</span>&gt; query = em.<span class="mth">createQuery</span>(
+    <span class="str">"SELECT p FROM Producto p"</span>, <span class="typ">Producto</span>.<span class="kw">class</span>
+);
+<span class="typ">List</span>&lt;<span class="typ">Producto</span>&gt; todos = query.<span class="mth">getResultList</span>();
+
+<span class="cm">// Ordenar por precio descendente</span>
+<span class="typ">List</span>&lt;<span class="typ">Producto</span>&gt; ordenados = em.<span class="mth">createQuery</span>(
+    <span class="str">"SELECT p FROM Producto p ORDER BY p.precio DESC"</span>,
+    <span class="typ">Producto</span>.<span class="kw">class</span>
+).<span class="mth">getResultList</span>();</code></pre>
+
+      <h3 id="jpql-filtros">4.2 Filtros y parámetros nombrados</h3>
+<pre><code><span class="cm">// Productos con precio menor a un valor (parámetro nombrado)</span>
+<span class="typ">TypedQuery</span>&lt;<span class="typ">Producto</span>&gt; q = em.<span class="mth">createQuery</span>(
+    <span class="str">"SELECT p FROM Producto p WHERE p.precio &lt; :maxPrecio"</span>,
+    <span class="typ">Producto</span>.<span class="kw">class</span>
+);
+q.<span class="mth">setParameter</span>(<span class="str">"maxPrecio"</span>, <span class="num">50.0</span>);
+<span class="typ">List</span>&lt;<span class="typ">Producto</span>&gt; baratos = q.<span class="mth">getResultList</span>();
+
+<span class="cm">// Contar registros</span>
+<span class="kw">long</span> total = em.<span class="mth">createQuery</span>(
+    <span class="str">"SELECT COUNT(p) FROM Producto p"</span>, <span class="typ">Long</span>.<span class="kw">class</span>
+).<span class="mth">getSingleResult</span>();
+
+<span class="cm">// Buscar por nombre (LIKE)</span>
+<span class="typ">List</span>&lt;<span class="typ">Producto</span>&gt; resultado = em.<span class="mth">createQuery</span>(
+    <span class="str">"SELECT p FROM Producto p WHERE p.nombre LIKE :patron"</span>,
+    <span class="typ">Producto</span>.<span class="kw">class</span>
+).<span class="mth">setParameter</span>(<span class="str">"patron"</span>, <span class="str">"%teclado%"</span>)
+ .<span class="mth">getResultList</span>();</code></pre>
+
+      <div class="note">
+        Usa siempre <strong>parámetros nombrados</strong> (<code>:nombre</code>) en lugar de concatenar
+        cadenas en la consulta. La concatenación puede introducir vulnerabilidades de inyección.
+      </div>
+
+      <div class="exercise">
+        <div class="exercise-title">Ejercicio 4.1 – Consultas sobre la tienda</div>
+        <p>Sobre la entidad <code>Libro</code> del ejercicio anterior, implementa:</p>
+        <ol>
+          <li>Listar todos los libros ordenados por título.</li>
+          <li>Buscar libros de un autor concreto (recibido por parámetro).</li>
+          <li>Mostrar cuántos libros hay con precio superior a 20 €.</li>
+          <li>Obtener el libro más barato.</li>
+        </ol>
+      </div>
+
+      <div class="resources">
+        <div class="resources-title">Recursos oficiales – JPQL</div>
+        <ul>
+          <li><a href="https://www.objectdb.com/java/jpa/query" target="_blank">ObjectDB: JPA Query Guide (JPQL, Criteria API)</a></li>
+          <li><a href="https://jakarta.ee/specifications/persistence/3.0/jakarta-persistence-spec-3.0.html#query-language" target="_blank">Jakarta Persistence Spec 3.0 – Query Language</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════
+         SECCIÓN 5 – TIPOS COMPLEJOS
+    ═════════════════════════════════════════════ -->
+    <section id="relaciones">
+      <div class="session-tag">Sesiones 12–14 · ~3 h</div>
+      <h2>5. Tipos estructurados, compuestos y relacionados</h2>
+
+      <h3 id="herencia">5.1 Herencia entre entidades</h3>
+      <p>
+        JPA soporta jerarquías de clases de forma natural. La anotación
+        <code>@Inheritance</code> controla cómo se almacena la jerarquía.
+        Con ObjectDB (OODB), la herencia funciona de manera transparente.
+      </p>
+
+<pre><code><span class="ann">@Entity</span>
+<span class="ann">@Inheritance</span>(strategy = <span class="typ">InheritanceType</span>.SINGLE_TABLE)
+<span class="kw">public abstract class</span> <span class="typ">Vehiculo</span> {
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue</span>
+    <span class="kw">private long</span> id;
+    <span class="kw">private</span> <span class="typ">String</span> matricula;
+    <span class="kw">private int</span>    anio;
+    <span class="cm">// getters/setters ...</span>
+}
+
+<span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="typ">Coche</span> <span class="kw">extends</span> <span class="typ">Vehiculo</span> {
+    <span class="kw">private int</span> numeroPuertas;
+}
+
+<span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="typ">Moto</span> <span class="kw">extends</span> <span class="typ">Vehiculo</span> {
+    <span class="kw">private boolean</span> tieneSidecar;
+}</code></pre>
+
+<pre><code><span class="cm">// Consultar todos los vehículos (incluye Coche y Moto)</span>
+<span class="typ">List</span>&lt;<span class="typ">Vehiculo</span>&gt; todos = em.<span class="mth">createQuery</span>(
+    <span class="str">"SELECT v FROM Vehiculo v"</span>, <span class="typ">Vehiculo</span>.<span class="kw">class</span>
+).<span class="mth">getResultList</span>();
+
+<span class="cm">// Consultar solo los coches</span>
+<span class="typ">List</span>&lt;<span class="typ">Coche</span>&gt; coches = em.<span class="mth">createQuery</span>(
+    <span class="str">"SELECT c FROM Coche c"</span>, <span class="typ">Coche</span>.<span class="kw">class</span>
+).<span class="mth">getResultList</span>();</code></pre>
+
+      <h3 id="colecciones">5.2 Relaciones entre objetos</h3>
+      <p>
+        JPA gestiona relaciones mediante anotaciones. Los dos casos más comunes en RA8:
+      </p>
+
+      <h4>Relación @ManyToOne / @OneToMany</h4>
+<pre><code><span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="typ">Categoria</span> {
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue</span>
+    <span class="kw">private long</span> id;
+    <span class="kw">private</span> <span class="typ">String</span> nombre;
+
+    <span class="ann">@OneToMany</span>(mappedBy = <span class="str">"categoria"</span>, cascade = <span class="typ">CascadeType</span>.ALL)
+    <span class="kw">private</span> <span class="typ">List</span>&lt;<span class="typ">Producto</span>&gt; productos = <span class="kw">new</span> <span class="typ">ArrayList</span>&lt;&gt;();
+
+    <span class="cm">// getters/setters ...</span>
+}
+
+<span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="typ">Producto</span> {
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue</span>
+    <span class="kw">private long</span> id;
+    <span class="kw">private</span> <span class="typ">String</span> nombre;
+
+    <span class="ann">@ManyToOne</span>
+    <span class="kw">private</span> <span class="typ">Categoria</span> categoria;  <span class="cm">// referencia directa al objeto</span>
+
+    <span class="cm">// getters/setters ...</span>
+}</code></pre>
+
+<pre><code><span class="cm">// Crear categoría con productos y persistir en cascada</span>
+em.<span class="mth">getTransaction</span>().<span class="mth">begin</span>();
+
+<span class="typ">Categoria</span> electronica = <span class="kw">new</span> <span class="typ">Categoria</span>(<span class="str">"Electrónica"</span>);
+<span class="typ">Producto</span> teclado = <span class="kw">new</span> <span class="typ">Producto</span>(<span class="str">"Teclado"</span>, <span class="num">49.99</span>, <span class="num">10</span>);
+teclado.<span class="mth">setCategoria</span>(electronica);
+electronica.<span class="mth">getProductos</span>().<span class="mth">add</span>(teclado);
+
+em.<span class="mth">persist</span>(electronica);  <span class="cm">// CascadeType.ALL persiste también los productos</span>
+em.<span class="mth">getTransaction</span>().<span class="mth">commit</span>();</code></pre>
+
+      <div class="exercise">
+        <div class="exercise-title">Ejercicio 5.1 – Biblioteca</div>
+        <p>
+          Modela una biblioteca con las entidades <code>Autor</code> y <code>Libro</code>.
+          Un autor puede tener varios libros (<code>@OneToMany</code>).
+          Implementa:
+        </p>
+        <ol>
+          <li>Guardar autores con sus libros en la BBDD.</li>
+          <li>Listar todos los libros de un autor concreto.</li>
+          <li>Eliminar un autor (debe eliminarse también sus libros en cascada).</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════
+         SECCIÓN 6 – TRANSACCIONES
+    ═════════════════════════════════════════════ -->
+    <section id="transacciones">
+      <div class="session-tag">Sesión 15 · ~1 h</div>
+      <h2>6. Transacciones e integridad de datos</h2>
+      <p>
+        Una <strong>transacción</strong> es un conjunto de operaciones que deben ejecutarse
+        <em>todas o ninguna</em>. JPA las gestiona con la interfaz <code>EntityTransaction</code>.
+      </p>
+      <ul>
+        <li><code>begin()</code> — inicia la transacción.</li>
+        <li><code>commit()</code> — confirma todos los cambios en la BBDD.</li>
+        <li><code>rollback()</code> — deshace todos los cambios desde el último <code>begin()</code>.</li>
+      </ul>
+
+<pre><code><span class="typ">EntityTransaction</span> tx = em.<span class="mth">getTransaction</span>();
+
+<span class="kw">try</span> {
+    tx.<span class="mth">begin</span>();
+
+    <span class="cm">// Transferencia de stock entre dos productos</span>
+    <span class="typ">Producto</span> origen  = em.<span class="mth">find</span>(<span class="typ">Producto</span>.<span class="kw">class</span>, <span class="num">1L</span>);
+    <span class="typ">Producto</span> destino = em.<span class="mth">find</span>(<span class="typ">Producto</span>.<span class="kw">class</span>, <span class="num">2L</span>);
+
+    <span class="kw">int</span> cantidad = <span class="num">3</span>;
+    <span class="kw">if</span> (origen.<span class="mth">getStock</span>() &lt; cantidad)
+        <span class="kw">throw new</span> <span class="typ">IllegalStateException</span>(<span class="str">"Stock insuficiente"</span>);
+
+    origen.<span class="mth">setStock</span>(origen.<span class="mth">getStock</span>()  - cantidad);
+    destino.<span class="mth">setStock</span>(destino.<span class="mth">getStock</span>() + cantidad);
+
+    tx.<span class="mth">commit</span>();  <span class="cm">// ambos cambios se guardan juntos</span>
+    <span class="typ">System</span>.out.<span class="mth">println</span>(<span class="str">"Transferencia completada."</span>);
+
+} <span class="kw">catch</span> (<span class="typ">Exception</span> e) {
+    <span class="kw">if</span> (tx.<span class="mth">isActive</span>()) tx.<span class="mth">rollback</span>();  <span class="cm">// ningún cambio se aplica</span>
+    <span class="typ">System</span>.err.<span class="mth">println</span>(<span class="str">"Error: "</span> + e.<span class="mth">getMessage</span>());
+}</code></pre>
+
+      <div class="note">
+        El patrón <code>try / catch / rollback</code> garantiza que si ocurre cualquier error en mitad
+        de la transacción, la base de datos queda en el estado anterior, sin datos a medias.
+      </div>
+
+      <div class="exercise">
+        <div class="exercise-title">Ejercicio 6.1 – Transacciones seguras</div>
+        <p>
+          Amplía el sistema de biblioteca para implementar el préstamo de un libro:
+          al prestar un libro, se crea un objeto <code>Prestamo</code> (libro, alumno, fecha)
+          y el libro se marca como no disponible. Si el alumno ya tiene 3 préstamos activos,
+          lanza una excepción y haz <code>rollback</code> para que no se registre nada.
+        </p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════
+         RECURSOS OFICIALES
+    ═════════════════════════════════════════════ -->
+    <section id="recursos">
+      <h2>Recursos oficiales de referencia</h2>
+
+      <h3>Oracle / Java SE</h3>
+      <ul>
+        <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html" target="_blank">API: java.io.Serializable (Java 17)</a></li>
+        <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectOutputStream.html" target="_blank">API: ObjectOutputStream (Java 17)</a></li>
+        <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/ObjectInputStream.html" target="_blank">API: ObjectInputStream (Java 17)</a></li>
+        <li><a href="https://docs.oracle.com/en/java/javase/17/docs/specs/serialization/index.html" target="_blank">Java Object Serialization Specification – Java 17</a></li>
+      </ul>
+
+      <h3>Jakarta EE (Eclipse Foundation)</h3>
+      <ul>
+        <li><a href="https://jakarta.ee/specifications/persistence/" target="_blank">Jakarta Persistence – Página oficial de la especificación</a></li>
+        <li><a href="https://jakarta.ee/learn/docs/jakartaee-tutorial/current/persist/persistence-intro/persistence-intro.html" target="_blank">Jakarta EE Tutorial: Introducción a Jakarta Persistence</a></li>
+        <li><a href="https://jakarta.ee/learn/specification-guides/persistence-explained/" target="_blank">Jakarta Persistence Explained</a></li>
+        <li><a href="https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/entitymanager" target="_blank">API: EntityManager (Jakarta Persistence 3.2)</a></li>
+        <li><a href="https://jakarta.ee/learn/starter-guides/how-to-store-and-retrieve-data-using-jakarta-persistence/" target="_blank">Starter Guide: Store and Retrieve Data con Jakarta Persistence</a></li>
+      </ul>
+
+      <h3>ObjectDB</h3>
+      <ul>
+        <li><a href="https://www.objectdb.com/java/jpa" target="_blank">ObjectDB: Manual JPA completo</a></li>
+        <li><a href="https://www.objectdb.com/tutorial/jpa/start/maven" target="_blank">ObjectDB: Getting Started con Maven</a></li>
+        <li><a href="https://www.objectdb.com/java/jpa/query" target="_blank">ObjectDB: Guía de consultas (JPQL)</a></li>
+        <li><a href="https://www.objectdb.com/download" target="_blank">ObjectDB: Descarga (versión 2.9.5)</a></li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  RA8 – Bases de datos orientadas a objetos en Java &nbsp;·&nbsp;
+  DAW · Programación &nbsp;·&nbsp;
+  Generado con Claude Code
+</footer>
+
+</body>
+</html>

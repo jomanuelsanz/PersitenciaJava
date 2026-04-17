@@ -1,0 +1,19 @@
+# Maven
+target/
+
+# Ficheros de base de datos ObjectDB generados en ejecución
+*.odb
+*.odb$
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.eclipse/
+.settings/
+.classpath
+.project
+
+# Sistema
+.DS_Store
+Thumbs.db

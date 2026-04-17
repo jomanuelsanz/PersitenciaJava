@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence>
+  <persistence-unit name="ra8DB">
+    <provider>com.objectdb.jpa.Provider</provider>
+    <class>pio.daw.ra8.modelo.Categoria</class>
+    <class>pio.daw.ra8.modelo.Producto</class>
+    <class>pio.daw.ra8.ejemplos.jpa.Contacto</class>
+    <class>pio.daw.ra8.ejemplos.relaciones.Vehiculo</class>
+    <class>pio.daw.ra8.ejemplos.relaciones.Coche</class>
+    <class>pio.daw.ra8.ejemplos.relaciones.Moto</class>
+    <class>pio.daw.ra8.ejemplos.relaciones.Autor</class>
+    <class>pio.daw.ra8.ejemplos.relaciones.Libro</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="jakarta.persistence.jdbc.url" value="ra8.odb"/>
+    </properties>
+  </persistence-unit>
+</persistence>
